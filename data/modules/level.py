@@ -8,15 +8,20 @@ from data.modules.utils import generate_2d_list
 
 
 class Level:
-	def __init__(self, size: tuple[int, int]):
+	def __init__(self, size: tuple[int, int], particle_manager: pygbase.ParticleManager):
 		self.size = size
 
 		self.tiles: list[list[Tile | None]] = generate_2d_list(self.size[1], self.size[0])
 		self.edge_tiles: set[Tile] = set()
 
+		self.gen_tiles(particle_manager)
+
+		self.decay_timer = pygbase.Timer(0.1, False, True)
+
+	def gen_tiles(self, particle_manager: pygbase.ParticleManager):
 		for row in range(self.size[1]):
 			for col in range(self.size[0]):
-				tile = Tile((col, row))
+				tile = Tile((col, row), particle_manager)
 
 				self.tiles[row][col] = tile
 
@@ -45,7 +50,10 @@ class Level:
 						self.edge_tiles.add(new_tile)
 
 	def update(self, delta):
-		pass
+		self.decay_timer.tick(delta)
+
+		if self.decay_timer.done():
+			self.decay_tile()
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
 		for row in self.tiles:

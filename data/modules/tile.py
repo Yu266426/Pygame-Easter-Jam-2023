@@ -7,7 +7,7 @@ class Tile:
 	FRONT_SIZE = 6 * TILE_SCALE
 	SIZE = 16 * TILE_SCALE
 
-	def __init__(self, tile_pos: tuple[int, int]):
+	def __init__(self, tile_pos: tuple[int, int], particle_manager: pygbase.ParticleManager):
 		pygbase.Common.set_value("tile_size", Tile.SIZE)
 		pygbase.Common.set_value("tile_front_size", Tile.FRONT_SIZE)
 
@@ -29,8 +29,19 @@ class Tile:
 			self.pos, (Tile.SIZE, Tile.SIZE)
 		)
 
+		self.particle_spawner_1: pygbase.RectSpawner = particle_manager.add_spawner(pygbase.RectSpawner(self.pos, 0.5, 5, self.top_rect.size, False, "decay1", particle_manager))
+		self.particle_spawner_2: pygbase.RectSpawner = particle_manager.add_spawner(pygbase.RectSpawner(self.pos, 0.2, 10, self.top_rect.size, False, "decay2", particle_manager))
+
 	def decay(self) -> bool:
 		self.state += 1
+
+		self.particle_spawner_1.active = False
+		self.particle_spawner_2.active = False
+
+		if self.state == 1:
+			self.particle_spawner_1.active = True
+		elif self.state == 2:
+			self.particle_spawner_2.active = True
 
 		return self.state >= 3
 

@@ -1,14 +1,18 @@
 import pygame
 import pygbase
 
+from data.modules.shadow import Shadow
+
 
 class Player:
 	def __init__(self, pos):
 		self.animations = pygbase.AnimationManager([
-			("idle", pygbase.Animation("bunny", 0, 1), 8),
+			("idle", pygbase.Animation("bunny", 0, 2), 4),
 			("run", pygbase.Animation("bunny_run", 0, 4), 8)
 		], "idle")
 		self.flip = False
+
+		self.shadow = Shadow(self.animations.get_current_image().get_image().get_width(), (1, 0.2), 0.1)
 
 		self.pos = pygame.Vector2(pos)
 
@@ -34,4 +38,6 @@ class Player:
 		self.pos += self.input * 400 * delta
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
+		self.shadow.draw(screen, camera, self.pos)
+
 		self.animations.draw_at_pos(screen, self.pos, camera, flip=self.flip, draw_pos="midbottom")
