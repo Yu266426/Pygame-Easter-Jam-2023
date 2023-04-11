@@ -1,6 +1,7 @@
 import pygame
 import pygbase
 
+from data.modules.egg import Egg
 from data.modules.level import Level
 from data.modules.player import Player
 from data.modules.tile import Tile
@@ -22,6 +23,8 @@ class Game(pygbase.GameState):
 
 		self.player = Player((60, 60))
 
+		self.egg = Egg((200, 200))
+
 		self.void_particles = pygbase.ParticleManager()
 		self.void_particles.add_spawner(pygbase.CircleSpawner(
 			(Game.level_size[0] * Tile.SIZE / 2, Game.level_size[1] * Tile.SIZE / 2),
@@ -41,6 +44,7 @@ class Game(pygbase.GameState):
 
 		self.level.update(delta)
 		self.player.update(delta)
+		self.egg.update(delta)
 
 		self.camera.lerp_to_target(self.player.pos - pygame.Vector2(400, 400), 2 * delta)
 
@@ -53,6 +57,13 @@ class Game(pygbase.GameState):
 	def draw(self, screen: pygame.Surface):
 		screen.fill("black")
 		self.void_particles.draw(screen, self.camera)
+
 		self.level.draw(screen, self.camera)
+		self.player.draw_shadow(screen, self.camera)
+		self.egg.draw_shadow(screen, self.camera)
+
 		self.player.draw(screen, self.camera)
+
 		self.tile_particles.draw(screen, self.camera)
+
+		self.egg.draw(screen, self.camera)

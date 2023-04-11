@@ -14,4 +14,4 @@ class Shadow:
 		self.shadow = pygame.transform.scale_by(self.shadow, scale)
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera, pos: pygame.Vector2):
-		screen.blit(self.shadow, camera.world_to_screen((pos.x - self.size / 2, pos.y - self.size * self.scale[1] / 2)))
+		screen.blit(self.shadow, camera.world_to_screen((pos.x - self.size * self.scale[0] / 2, pos.y - self.size * self.scale[1] / 2)))

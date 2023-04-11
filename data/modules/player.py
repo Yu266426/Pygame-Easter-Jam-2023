@@ -37,7 +37,8 @@ class Player:
 
 		self.pos += self.input * 400 * delta
 
-	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
+	def draw_shadow(self, screen: pygame.Surface, camera: pygbase.Camera):
 		self.shadow.draw(screen, camera, self.pos)
 
+	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
 		self.animations.draw_at_pos(screen, self.pos, camera, flip=self.flip, draw_pos="midbottom")
