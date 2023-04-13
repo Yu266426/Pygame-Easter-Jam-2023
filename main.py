@@ -40,6 +40,16 @@ if __name__ == '__main__':
 		False
 	)
 
+	pygbase.add_particle_setting(
+		"fire",
+		[(255, 185, 185), (255, 203, 185), (255, 224, 186), (255, 238, 185), (255, 249, 185)],
+		(8.0, 12.0),
+		(6.0, 9.0),
+		(2.0, 2.0),
+		(0, -3),
+		False
+	)
+
 	# profiler = cProfile.Profile()
 	# profiler.enable()
 

@@ -16,7 +16,7 @@ class Tile:
 
 		self.state = 0
 
-		self.sprite_sheet: pygbase.SpriteSheet = pygbase.ResourceManager.get_resource(1, "tiles")
+		self.sprite_sheet: pygbase.SpriteSheet = pygbase.ResourceManager.get_resource(pygbase.Common.get_value("sprite_sheet_res"), "tiles")
 
 		self.front_rect = pygame.Rect(
 			self.pos[0],
@@ -44,6 +44,11 @@ class Tile:
 			self.particle_spawner_2.active = True
 
 		return self.state >= 3
+
+	def reset(self):
+		self.state = 0
+		self.particle_spawner_1.active = False
+		self.particle_spawner_2.active = False
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
 		self.sprite_sheet.get_image(self.state).draw(screen, camera.world_to_screen(self.pos))
