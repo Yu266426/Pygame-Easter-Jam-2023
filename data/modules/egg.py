@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import pygbase
 
@@ -5,7 +7,7 @@ from data.modules.shadow import Shadow
 
 
 class Egg:
-	def __init__(self, pos):
+	def __init__(self, pos, particle_manager: pygbase.ParticleManager):
 		self.animations = pygbase.AnimationManager([
 			("idle", pygbase.Animation("egg", 0, 2), 2),
 		], "idle")
@@ -22,13 +24,17 @@ class Egg:
 		self.falling_off = False
 		self.alive = True
 
+		self.particles: pygbase.ParticleManager = particle_manager
+		self.particle_settings = pygbase.Common.get_value("particle_settings")["everything"]
+
 	def fall(self):
 		self.falling_off = True
+		self.on_ground = False
 
 	def update(self, delta: float):
 		self.animations.update(delta)
 
-		if not self.falling_off:
+		if not self.on_ground and not self.falling_off:
 			if self.height > 0:
 				self.y_velocity += self.fall_speed * delta
 				self.height -= self.y_velocity + (self.fall_speed * delta ** 2) / 2
@@ -36,7 +42,15 @@ class Egg:
 				self.height = 0
 				self.y_velocity = 0
 				self.on_ground = True
-		else:
+
+				for _ in range(random.randint(50, 100)):
+					spawn_offset = pygame.Vector2(random.uniform(-30, 30), random.uniform(-30, 30))
+					self.particles.add_particle(
+						self.pos + spawn_offset,
+						self.particle_settings,
+						spawn_offset * 20
+					)
+		elif self.falling_off:
 			self.y_velocity += self.fall_speed * delta
 			self.height -= self.y_velocity + (self.fall_speed * delta ** 2) / 2
 

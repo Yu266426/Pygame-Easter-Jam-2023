@@ -6,6 +6,7 @@ import pygbase
 
 from data.modules.altar import Altar
 from data.modules.egg import Egg
+from data.modules.end import End
 from data.modules.level import Level
 from data.modules.player import Player
 from data.modules.tile import Tile
@@ -31,25 +32,30 @@ class Game(pygbase.GameState):
 		))
 
 		self.particles = pygbase.ParticleManager()
+		self.egg_particle_settings = pygbase.Common.get_value("particle_settings")["everything"]
 
 		self.rendered_entities: list = []
 
 		self.level = Level(Game.level_size, self.particles)
-		self.altar = Altar((Game.level_size[0] / 2 * Tile.SIZE, Game.level_size[1] / 2 * Tile.SIZE), self.particles)
-		self.rendered_entities.append(self.altar)
+		# self.altar = Altar((Game.level_size[0] / 2 * Tile.SIZE, Game.level_size[1] / 2 * Tile.SIZE), self.particles)
+		# self.rendered_entities.append(self.altar)
 
 		self.egg: Optional[Egg] = None
 
 		self.player = Player((Game.level_size[0] * Tile.SIZE / 2, Game.level_size[1] * Tile.SIZE / 2 + 60), self.level)
 		self.rendered_entities.append(self.player)
 
-		self.death_timer = pygbase.Timer(4, True, False)
+		self.death_timer = pygbase.Timer(2, True, False)
+		self.dead = False
+
+		self.run_time = 0
+		self.collected_eggs = 0
 
 	def spawn_egg(self, attempts=10):
 		for _ in range(attempts):
 			spawn_pos = random.randrange(0, Game.level_size[0] * Tile.SIZE), random.randrange(0, Game.level_size[1] * Tile.SIZE)
 			if self.level.get_tile(spawn_pos) is not None:
-				self.egg = Egg(spawn_pos)
+				self.egg = Egg(spawn_pos, self.particles)
 				self.rendered_entities.append(self.egg)
 				break
 
@@ -69,9 +75,20 @@ class Game(pygbase.GameState):
 
 			self.egg = None
 		elif self.egg.on_ground and self.egg.pos.distance_to(self.player.pos) < 30:
-			self.rendered_entities.remove(self.egg)
+			for _ in range(random.randint(50, 100)):
+				spawn_offset = pygame.Vector2(random.uniform(-30, 30), random.uniform(-30, 30))
+				self.particles.add_particle(
+					self.egg.pos + spawn_offset,
+					self.egg_particle_settings,
+					spawn_offset * 20
+				)
+
+			if self.egg in self.rendered_entities:
+				self.rendered_entities.remove(self.egg)
 			self.egg = None
 			self.level.start_regen()
+
+			self.collected_eggs += 1
 
 	def player_update(self, delta):
 		self.player.update(delta)
@@ -94,10 +111,14 @@ class Game(pygbase.GameState):
 				self.rendered_entities.remove(self.player)
 				self.death_timer.start()
 
-		if self.player.falling_off and self.death_timer.done():
-			print("ded")
+		if not self.dead and self.player.falling_off and self.death_timer.done():
+			self.set_next_state(pygbase.FadeTransition(self, End(self.run_time, self.collected_eggs), 3, (0, 0, 0)))
+			self.dead = True
 
 	def update(self, delta: float):
+		if not self.dead:
+			self.run_time += delta
+
 		self.death_timer.tick(delta)
 
 		if self.egg is None:
@@ -108,7 +129,7 @@ class Game(pygbase.GameState):
 
 		self.level.update(delta)
 
-		self.altar.update(delta)
+		# self.altar.update(delta)
 
 		if self.egg is not None:
 			self.egg_update(delta)
@@ -119,12 +140,6 @@ class Game(pygbase.GameState):
 
 		if pygbase.InputManager.keys_down[pygame.K_ESCAPE]:
 			pygbase.EventManager.post_event(pygame.QUIT)
-
-		if pygbase.InputManager.keys_pressed[pygame.K_SPACE]:
-			self.level.decay_tile()
-
-		if pygbase.InputManager.keys_down[pygame.K_r]:
-			self.level.start_regen()
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill("black")

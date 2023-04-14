@@ -3,7 +3,6 @@ from collections import deque
 
 import pygame
 import pygbase
-from pygbase import Common
 
 from data.modules.tile import Tile
 from data.modules.utils import generate_2d_list
@@ -25,7 +24,7 @@ class Level:
 
 		self.regen = 0
 		self.regen_cooldown = pygbase.Timer(0.04, True, False)
-		self.regen_particle_settings = Common.get_value("particle_settings")["fire"]
+		self.regen_particle_settings = pygbase.Common.get_value("particle_settings")["everything"]
 		self.pos_queue = deque()
 		self.visited_pos = set()
 
