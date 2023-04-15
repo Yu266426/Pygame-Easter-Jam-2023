@@ -2,7 +2,7 @@ import cProfile
 
 import pygbase
 
-from data.modules.files import sprite_sheet_path, image_path
+from data.modules.files import sprite_sheet_path, image_path, sound_path
 from data.modules.game import Game
 from data.modules.tile import Tile
 from data.modules.utils import darken_rgb
@@ -12,6 +12,7 @@ if __name__ == '__main__':
 
 	pygbase.add_sprite_sheet_resource("sprite_sheet", 1, sprite_sheet_path, Tile.TILE_SCALE)
 	pygbase.add_image_resource("image", 2, image_path)
+	pygbase.add_sound_resource("sound", 3, sound_path, ".wav")
 
 	pygbase.add_particle_setting(
 		"void",

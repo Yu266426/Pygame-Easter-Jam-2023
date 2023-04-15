@@ -27,6 +27,8 @@ class Egg:
 		self.particles: pygbase.ParticleManager = particle_manager
 		self.particle_settings = pygbase.Common.get_value("particle_settings")["everything"]
 
+		self.fall_sound: pygame.mixer.Sound = pygbase.ResourceManager.get_resource(3, "drop")
+
 	def fall(self):
 		self.falling_off = True
 		self.on_ground = False
@@ -42,6 +44,8 @@ class Egg:
 				self.height = 0
 				self.y_velocity = 0
 				self.on_ground = True
+
+				self.fall_sound.play()
 
 				for _ in range(random.randint(50, 100)):
 					spawn_offset = pygame.Vector2(random.uniform(-30, 30), random.uniform(-30, 30))

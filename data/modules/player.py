@@ -30,9 +30,13 @@ class Player:
 		self.y_velocity = 0
 		self.height = 0
 
+		self.fall_sound: pygame.mixer.Sound = pygbase.ResourceManager.get_resource(3, "fall")
+
 	def fall(self):
 		self.falling_off = True
 		self.fall_direction = self.input.copy()
+
+		self.fall_sound.play()
 
 	def update(self, delta):
 		self.animations.update(delta)

@@ -7,6 +7,7 @@ import pygbase
 from data.modules.altar import Altar
 from data.modules.egg import Egg
 from data.modules.end import End
+from data.modules.files import music_path
 from data.modules.level import Level
 from data.modules.player import Player
 from data.modules.tile import Tile
@@ -51,6 +52,12 @@ class Game(pygbase.GameState):
 		self.run_time = 0
 		self.collected_eggs = 0
 
+		pygame.mixer.music.load(music_path / "music.wav")
+		pygame.mixer.music.set_volume(0.5)
+		pygame.mixer.music.play(-1)
+
+		self.egg_pickup_sound: pygame.mixer.Sound = pygbase.ResourceManager.get_resource(3, "pickup")
+
 	def spawn_egg(self, attempts=10):
 		for _ in range(attempts):
 			spawn_pos = random.randrange(0, Game.level_size[0] * Tile.SIZE), random.randrange(0, Game.level_size[1] * Tile.SIZE)
@@ -89,6 +96,7 @@ class Game(pygbase.GameState):
 			self.level.start_regen()
 
 			self.collected_eggs += 1
+			self.egg_pickup_sound.play()
 
 	def player_update(self, delta):
 		self.player.update(delta)

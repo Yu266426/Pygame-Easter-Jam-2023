@@ -6,3 +6,5 @@ asset_path = data_path / "assets"
 
 sprite_sheet_path = asset_path / "sprite_sheets"
 image_path = asset_path / "images"
+sound_path = asset_path / "sounds"
+music_path = asset_path / "music"
