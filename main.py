@@ -1,4 +1,5 @@
 import cProfile
+import logging
 
 import pygbase
 
@@ -8,7 +9,7 @@ from data.modules.tile import Tile
 from data.modules.utils import darken_rgb
 
 if __name__ == '__main__':
-	pygbase.init((800, 800))
+	pygbase.init((800, 800), logging_level=logging.ERROR)
 
 	pygbase.add_sprite_sheet_resource("sprite_sheet", 1, sprite_sheet_path, Tile.TILE_SCALE)
 	pygbase.add_image_resource("image", 2, image_path)
@@ -70,7 +71,7 @@ if __name__ == '__main__':
 	# profiler = cProfile.Profile()
 	# profiler.enable()
 
-	app = pygbase.App(Game)
+	app = pygbase.App(Game, title="Egg Hunt!")
 	app.run()
 
 	# profiler.disable()
