@@ -1,11 +1,1 @@
-{
-  "drop": {
-    "volume": 0.4
-  },
-  "fall": {
-    "volume": 0.8
-  },
-  "pickup": {
-    "volume": 0.7
-  }
-}
+{"drop": {"volume": 0.4}, "fall": {"volume": 0.8}, "pickup": {"volume": 0.7}}
