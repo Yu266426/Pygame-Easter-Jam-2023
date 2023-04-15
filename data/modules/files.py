@@ -1,6 +1,8 @@
+import os
 import pathlib
+import sys
 
-current_path = pathlib.Path.cwd()
+current_path = pathlib.Path(os.path.dirname(os.path.realpath(sys.argv[0])))
 data_path = current_path / "data"
 asset_path = data_path / "assets"
 
