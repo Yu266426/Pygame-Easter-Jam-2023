@@ -3,7 +3,7 @@
 Collect eggs to try and survive as long as possible on a disintegrating island!
 --------------
 
-Unfortunately, I can only build for MacOS (ARM, idk if that makes a difference), and so windows users will have a little harder of a time installing things:
+If the builds of the game don’t work, you can try:
 
 - First, have at least `python 3.11`, and `pygame-ce 2.2.1`.
 
