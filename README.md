@@ -1,6 +1,9 @@
 # Egg Hunt!
 
 Collect eggs to try and survive as long as possible on a disintegrating island!
+
+Itch Page: https://yu266426.itch.io/egg-hunt
+
 --------------
 
 If the builds of the game don’t work, you can try:
