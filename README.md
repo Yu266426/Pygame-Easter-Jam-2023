@@ -7,7 +7,7 @@ If the builds of the game don’t work, you can try:
 
 - First, have at least `python 3.11`, and `pygame-ce 2.2.1`.
 
-- Then, go to https://github.com/Yu266426/pygbase, and download it as a zip.
+- Then, go to https://github.com/Yu266426/pygbase/tree/Easter-Jam-2023, and download it as a zip.
 
 - Unzip the folder, and in the terminal (cd into the folder with all the stuff in it) run `pip install .`
 
