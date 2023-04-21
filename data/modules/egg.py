@@ -25,7 +25,7 @@ class Egg:
 		self.alive = True
 
 		self.particles: pygbase.ParticleManager = particle_manager
-		self.particle_settings = pygbase.Common.get_value("particle_settings")["everything"]
+		self.particle_settings = pygbase.Common.get_particle_setting("everything")
 
 		self.fall_sound: pygame.mixer.Sound = pygbase.ResourceManager.get_resource(3, "drop")
 
