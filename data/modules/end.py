@@ -2,9 +2,9 @@ import pygame
 import pygbase
 
 
-class End(pygbase.GameState):
+class End(pygbase.GameState, name="end"):
 	def __init__(self, run_time: float, eggs: int):
-		super().__init__(1)
+		super().__init__()
 
 		self.run_time = run_time
 
@@ -40,7 +40,7 @@ class End(pygbase.GameState):
 			2,
 			"button",
 			self.set_next_state,
-			Game(),
+			(Game(),),
 			text="Restart",
 			text_colour=(255, 255, 252),
 			font="Comic Sans MS",
