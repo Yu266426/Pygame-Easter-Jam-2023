@@ -13,11 +13,11 @@ from data.modules.player import Player
 from data.modules.tile import Tile
 
 
-class Game(pygbase.GameState, name="game"):
+class Game(pygbase.GameState):
 	level_size = (14, 14)
 
 	def __init__(self):
-		super().__init__()
+		super().__init__(1)
 
 		self.camera = pygbase.Camera((Game.level_size[0] * Tile.SIZE / 2 - 400, Game.level_size[1] * Tile.SIZE / 2 - 400 + 60))
 
@@ -33,7 +33,7 @@ class Game(pygbase.GameState, name="game"):
 		))
 
 		self.particles = pygbase.ParticleManager()
-		self.egg_particle_settings = pygbase.Common.get_particle_setting("everything")
+		self.egg_particle_settings = pygbase.Common.get_value("particle_settings")["everything"]
 
 		self.rendered_entities: list = []
 

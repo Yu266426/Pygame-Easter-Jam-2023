@@ -24,7 +24,7 @@ class Level:
 
 		self.regen = 0
 		self.regen_cooldown = pygbase.Timer(0.04, True, False)
-		self.regen_particle_settings = pygbase.Common.get_particle_setting("everything")
+		self.regen_particle_settings = pygbase.Common.get_value("particle_settings")["everything"]
 		self.pos_queue = deque()
 		self.visited_pos = set()
 
