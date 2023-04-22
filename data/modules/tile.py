@@ -16,7 +16,7 @@ class Tile:
 
 		self.state = 0
 
-		self.sprite_sheet: pygbase.SpriteSheet = pygbase.ResourceManager.get_resource(pygbase.Common.get_value("sprite_sheet_res"), "tiles")
+		self.sprite_sheet: pygbase.SpriteSheet = pygbase.ResourceManager.get_resource(pygbase.Common.get_resource_type("sprite_sheet"), "tiles")
 
 		self.front_rect = pygame.Rect(
 			self.pos[0],
