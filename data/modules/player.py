@@ -9,7 +9,8 @@ class Player:
 	def __init__(self, pos, level: Level):
 		self.animations = pygbase.AnimationManager([
 			("idle", pygbase.Animation("bunny", 0, 2), 4),
-			("run", pygbase.Animation("bunny_run", 0, 4), 8)
+			("run", pygbase.Animation("bunny_run", 0, 4), 8),
+			("jump", pygbase.Animation("bunny_run", 0, 4), 2)
 		], "idle")
 		self.flip = False
 
@@ -26,11 +27,14 @@ class Player:
 		self.falling_off = False
 		self.fall_direction = None
 
-		self.fall_speed = 10
-		self.y_velocity = 0
 		self.height = 0
 
+		self.fall_speed = 10
+		self.y_velocity = 0
 		self.fall_sound: pygame.mixer.Sound = pygbase.ResourceManager.get_resource(3, "fall")
+
+		self.jump_charge = 0
+		self.is_jumping = False
 
 	def fall(self):
 		self.falling_off = True
@@ -39,27 +43,53 @@ class Player:
 		self.fall_sound.play()
 
 	def update(self, delta):
+		# print(self.is_jumping, self.jump_charge)
 		self.animations.update(delta)
 
 		if not self.falling_off:
-			self.input.x = pygbase.InputManager.keys_pressed[pygame.K_d] - pygbase.InputManager.keys_pressed[pygame.K_a]
-			self.input.y = pygbase.InputManager.keys_pressed[pygame.K_s] - pygbase.InputManager.keys_pressed[pygame.K_w]
+			if not self.is_jumping:
+				if pygbase.InputManager.keys_pressed[pygame.K_SPACE]:
+					if self.jump_charge == 0:
+						self.jump_charge = 6
 
-			if self.input.length() != 0:
-				self.input.normalize_ip()
-				self.animations.switch_state("run")
+					self.jump_charge += 20 * delta
+					if self.jump_charge > 12:
+						self.jump_charge = 10
+				elif self.jump_charge > 0:
+					self.is_jumping = True
+
+				self.input.x = pygbase.InputManager.keys_pressed[pygame.K_d] - pygbase.InputManager.keys_pressed[pygame.K_a]
+				self.input.y = pygbase.InputManager.keys_pressed[pygame.K_s] - pygbase.InputManager.keys_pressed[pygame.K_w]
+
+				if self.input.length() != 0:
+					self.input.normalize_ip()
+					self.animations.switch_state("run")
+				else:
+					self.animations.switch_state("idle")
+
+				if self.input.x > 0:
+					self.flip = False
+				elif self.input.x < 0:
+					self.flip = True
+
+				self.pos += self.input * 400 * delta
 			else:
-				self.animations.switch_state("idle")
+				self.height += self.jump_charge * 100 * delta
+				self.height -= 500 * delta
 
-			if self.input.x > 0:
-				self.flip = False
-			elif self.input.x < 0:
-				self.flip = True
+				self.jump_charge -= 13 * delta
+				if self.jump_charge < 0:
+					self.jump_charge = 0
 
-			self.pos += self.input * 400 * delta
+				if self.height <= 1:
+					self.height = 0
+					self.jump_charge = 0
+					self.is_jumping = False
+
+				self.pos += self.input * 500 * delta
 		else:
 			self.y_velocity += self.fall_speed * delta
-			self.height += self.y_velocity + (self.fall_speed * delta ** 2) / 2
+			self.height -= self.y_velocity + (self.fall_speed * delta ** 2) / 2
 
 			self.angle += 5
 
@@ -68,7 +98,4 @@ class Player:
 			self.shadow.draw(screen, camera, self.pos)
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
-		if not self.falling_off:
-			self.animations.draw_at_pos(screen, self.pos, camera, flip=self.flip, draw_pos="midbottom")
-		else:
-			self.animations.draw_at_pos(screen, (self.pos.x, self.pos.y + self.height), camera, flip=self.flip, angle=self.angle, draw_pos="midbottom")
+		self.animations.draw_at_pos(screen, (self.pos.x, self.pos.y - self.height), camera, flip=self.flip, angle=self.angle, draw_pos="midbottom")

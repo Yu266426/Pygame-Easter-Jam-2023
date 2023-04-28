@@ -71,7 +71,8 @@ if __name__ == '__main__':
 	# profiler = cProfile.Profile()
 	# profiler.enable()
 
-	app = pygbase.App(Game, title="Egg Hunt!")
+	# app = pygbase.App(Game, title="Egg Hunt!")
+	app = pygbase.App(Game)
 	app.run()
 
 	# profiler.disable()

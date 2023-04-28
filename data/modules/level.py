@@ -12,12 +12,16 @@ class Level:
 	def __init__(self, size: tuple[int, int], particle_manager: pygbase.ParticleManager):
 		self.size = size
 
+		self.total_tiles = self.size[0] * self.size[1]
+		self.num_tiles = self.size[0] * self.size[1]
+
 		self.tiles: list[list[Tile | None]] = generate_2d_list(self.size[1], self.size[0])
 		self.edge_pos: set[tuple] = set()
 
 		self.particle_manager = particle_manager
 		self.gen_tiles()
 
+		self.base_decay_time = 0.1
 		self.decay_timer = pygbase.Timer(0.1, False, True)
 
 		self.falling_entities: dict[int, list] = {}
@@ -54,6 +58,7 @@ class Level:
 				if tile.decay():
 					self.edge_pos.remove(tile_pos)
 					self.tiles[tile_pos[1]][tile_pos[0]] = None
+					self.num_tiles -= 1
 
 					for direction in directions:
 						new_pos = tile_pos[0] + direction[0], tile_pos[1] + direction[1]
@@ -68,13 +73,29 @@ class Level:
 				self.edge_pos.remove(tile_pos)
 
 	def start_regen(self, amount=24):
-		if len(self.edge_pos) > 0:
-			tile_pos = random.choice(list(self.edge_pos))
-		else:
-			tile_pos = random.randrange(0, self.size[0]), random.randrange(0, self.size[1])
+		def to_world_pos(tile_pos: tuple):
+			return tile_pos[0] * Tile.SIZE + Tile.SIZE / 2, tile_pos[1] * Tile.SIZE + Tile.SIZE
 
-		self.pos_queue.append(tile_pos)
-		self.visited_pos.add(tile_pos)
+		edge_positions = list(self.edge_pos)
+
+		if len(self.edge_pos) > 0:
+			# closest_pos = to_world_pos(edge_positions[0])
+			# closest_distance = start_pos.distance_to(edge_positions[0])
+			#
+			# for pos in edge_positions[1:]:
+			# 	distance = start_pos.distance_to(to_world_pos(pos))
+			#
+			# 	if distance < closest_distance:
+			# 		closest_distance = distance
+			# 		closest_pos = pos
+			#
+			# first_pos = closest_pos
+			first_pos = random.choice(edge_positions)
+		else:
+			first_pos = random.randrange(0, self.size[0]), random.randrange(0, self.size[1])
+
+		self.pos_queue.append(first_pos)
+		self.visited_pos.add(first_pos)
 		self.regen = amount
 
 		self.regen_cooldown.start()
@@ -96,6 +117,7 @@ class Level:
 
 			if self.tiles[pos[1]][pos[0]] is None:
 				self.tiles[pos[1]][pos[0]] = Tile(pos, self.particle_manager)
+				self.num_tiles += 1
 			else:
 				self.tiles[pos[1]][pos[0]].reset()
 
@@ -174,14 +196,20 @@ class Level:
 		if self.decay_timer.done():
 			self.decay_tile()
 
+			if self.num_tiles / self.total_tiles < 0.2:
+				self.decay_timer.set_cooldown(self.base_decay_time * 1.2)
+			else:
+				self.decay_timer.set_cooldown(self.base_decay_time)
+
 		self.regen_cooldown.tick(delta)
 		if self.regen_cooldown.done():
 			self.regen_tile()
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
-		if -1 in self.falling_entities:
-			for entity in self.falling_entities[-1]:
-				entity.draw(screen, camera)
+		for row, entities in self.falling_entities.items():
+			if row < 0:
+				for entity in entities:
+					entity.draw(screen, camera)
 
 		for row_index, row in enumerate(self.tiles):
 			for tile in row:
@@ -192,9 +220,10 @@ class Level:
 				for entity in self.falling_entities[row_index]:
 					entity.draw(screen, camera)
 
-		if self.size[1] in self.falling_entities:
-			for entity in self.falling_entities[self.size[1]]:
-				entity.draw(screen, camera)
+		for row, entities in self.falling_entities.items():
+			if row >= self.size[1]:
+				for entity in entities:
+					entity.draw(screen, camera)
 
 # for pos in self.edge_pos:
 # 	pygame.draw.rect(screen, "blue", pygame.Rect(camera.world_to_screen((pos[0] * Tile.SIZE, pos[1] * Tile.SIZE)), (Tile.SIZE, Tile.SIZE)))

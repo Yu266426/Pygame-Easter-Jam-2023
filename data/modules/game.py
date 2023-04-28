@@ -14,7 +14,7 @@ from data.modules.tile import Tile
 
 
 class Game(pygbase.GameState, name="game"):
-	level_size = (14, 14)
+	level_size = (16, 16)
 
 	def __init__(self):
 		super().__init__()
@@ -52,9 +52,9 @@ class Game(pygbase.GameState, name="game"):
 		self.run_time = 0
 		self.collected_eggs = 0
 
-		pygame.mixer.music.load(music_path / "music.wav")
-		pygame.mixer.music.set_volume(0.5)
-		pygame.mixer.music.play(-1)
+		# pygame.mixer.music.load(music_path / "music.wav")
+		# pygame.mixer.music.set_volume(0.1)
+		# pygame.mixer.music.play(-1)
 
 		self.egg_pickup_sound: pygame.mixer.Sound = pygbase.ResourceManager.get_resource(3, "pickup")
 
@@ -81,7 +81,7 @@ class Game(pygbase.GameState, name="game"):
 				self.level.remove_falling_entity(self.egg)
 
 			self.egg = None
-		elif self.egg.on_ground and self.egg.pos.distance_to(self.player.pos) < 30:
+		elif self.egg.on_ground and not self.player.is_jumping and self.egg.pos.distance_to(self.player.pos) < 35:
 			for _ in range(random.randint(50, 100)):
 				spawn_offset = pygame.Vector2(random.uniform(-30, 30), random.uniform(-30, 30))
 				self.particles.add_particle(
@@ -90,17 +90,18 @@ class Game(pygbase.GameState, name="game"):
 					spawn_offset * 20
 				)
 
+			self.level.start_regen()
+
 			if self.egg in self.rendered_entities:
 				self.rendered_entities.remove(self.egg)
 			self.egg = None
-			self.level.start_regen()
 
 			self.collected_eggs += 1
 			self.egg_pickup_sound.play()
 
 	def player_update(self, delta):
 		self.player.update(delta)
-		if not self.player.falling_off:
+		if not self.player.falling_off and not self.player.is_jumping:
 			on_tile = False
 			buffer = 30
 
@@ -148,6 +149,9 @@ class Game(pygbase.GameState, name="game"):
 
 		if pygbase.InputManager.keys_down[pygame.K_ESCAPE]:
 			pygbase.EventManager.post_event(pygame.QUIT)
+
+		if pygbase.InputManager.keys_pressed[pygame.K_r]:
+			self.level.decay_tile()
 
 	def draw(self, screen: pygame.Surface):
 		screen.fill("black")
