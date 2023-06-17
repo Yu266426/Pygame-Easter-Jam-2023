@@ -48,7 +48,7 @@ class Player:
 
 		if not self.falling_off:
 			if not self.is_jumping:
-				if pygbase.InputManager.keys_pressed[pygame.K_SPACE]:
+				if pygbase.InputManager.get_key_pressed(pygame.K_SPACE):
 					if self.jump_charge == 0:
 						self.jump_charge = 6
 
@@ -58,8 +58,8 @@ class Player:
 				elif self.jump_charge > 0:
 					self.is_jumping = True
 
-				self.input.x = pygbase.InputManager.keys_pressed[pygame.K_d] - pygbase.InputManager.keys_pressed[pygame.K_a]
-				self.input.y = pygbase.InputManager.keys_pressed[pygame.K_s] - pygbase.InputManager.keys_pressed[pygame.K_w]
+				self.input.x = pygbase.InputManager.get_key_pressed(pygame.K_d) - pygbase.InputManager.get_key_pressed(pygame.K_a)
+				self.input.y = pygbase.InputManager.get_key_pressed(pygame.K_s) - pygbase.InputManager.get_key_pressed(pygame.K_w)
 
 				if self.input.length() != 0:
 					self.input.normalize_ip()
@@ -98,4 +98,4 @@ class Player:
 			self.shadow.draw(screen, camera, self.pos)
 
 	def draw(self, screen: pygame.Surface, camera: pygbase.Camera):
-		self.animations.draw_at_pos(screen, (self.pos.x, self.pos.y - self.height), camera, flip=self.flip, angle=self.angle, draw_pos="midbottom")
+		self.animations.draw_at_pos(screen, (self.pos.x, self.pos.y - self.height), camera, flip=(self.flip, False), angle=self.angle, draw_pos="midbottom")

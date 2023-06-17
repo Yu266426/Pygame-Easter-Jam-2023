@@ -147,10 +147,10 @@ class Game(pygbase.GameState, name="game"):
 
 		self.camera.lerp_to_target(self.player.pos - pygame.Vector2(400, 400), 2 * delta)
 
-		if pygbase.InputManager.keys_down[pygame.K_ESCAPE]:
+		if pygbase.InputManager.get_key_pressed(pygame.K_ESCAPE):
 			pygbase.EventManager.post_event(pygame.QUIT)
 
-		if pygbase.InputManager.keys_pressed[pygame.K_r]:
+		if pygbase.InputManager.get_key_pressed(pygame.K_r):
 			self.level.decay_tile()
 
 	def draw(self, screen: pygame.Surface):
